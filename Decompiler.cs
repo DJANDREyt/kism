@@ -8,22 +8,11 @@ using UAssetAPI.ExportTypes;
 using UAssetAPI.Kismet.Bytecode;
 using UAssetAPI.Kismet.Bytecode.Expressions;
 
-using Dot;
-using Xunit;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections;
-using static KismetAnalyzer.SummaryGenerator;
 using System.Text;
 using UAssetAPI.FieldTypes;
-using Newtonsoft.Json.Linq;
-using System.Security.Cryptography;
-using System.Runtime.ExceptionServices;
 using System;
-using static KismetAnalyzer.Decompiler;
-using System.Data.SqlTypes;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 public class Decompiler {
 
