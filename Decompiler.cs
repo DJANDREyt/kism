@@ -1667,7 +1667,7 @@ public class Decompiler {
         return true;
     }
 
-    bool StragedyCreateNextForLoopAndIf(BasicBlock bb_root)
+    BasicBlock StragedyCreateNextForLoopAndIf(BasicBlock bb_root)
     {
         // if a if node, search for it first, then use the found next for previous if to skip the middle
         Stack<BasicBlock> fullpath = new Stack<BasicBlock>();
@@ -1840,6 +1840,11 @@ public class Decompiler {
                                 gbb.is_continue = true;
                                 // we cannot simply replace, because x maybe a if or control-flow block
                                 updateBlock(bb_root, new_loop, new Dictionary<uint, bool>());
+                                if (bb_root.idx == new_loop.idx)
+                                {
+                                    // this shouldn't happen?
+                                    bb_root = new_loop;
+                                }
                                 new_loop.loop_body = x; // <-- this maybe continue block, but we can't mark it on this garmmar
                                 x.idx |= (1 << 24);
                                 return new_loop;
@@ -1947,7 +1952,14 @@ public class Decompiler {
             
         }
 
-        return resolveNextForIf(bb_root, null, new Dictionary<uint, bool>());
+        if (resolveNextForIf(bb_root, null, new Dictionary<uint, bool>()))
+        {
+            return bb_root;
+        }
+        else
+        {
+            return null;
+        }
 
     }
 
@@ -2108,12 +2120,11 @@ public class Decompiler {
         }
 
         // Post BB Stragedy
-        if (!StragedyCreateNextForLoopAndIf(bb))
+        bb = StragedyCreateNextForLoopAndIf(bb);
+        if (bb == null)
         {
             return Err("Cannot resolve next for if (un-merged if)");
         }
-        // TODO: merge switch block
-        // if () if () if () if () ...
         bb = StragedyMergeSwitchBlocks(bb);
         if (bb == null)
         {
