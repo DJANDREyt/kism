@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet publish --sc false -r ${{ matrix.rid }} -c release -o ${{ matrix.rid }} -p:PublishSingleFile=true
+        run: dotnet publish --sc false -r ${{ matrix.rid }} -c release -o ${{ matrix.rid }}
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }}-${{ steps.vars.outputs.sha_short }}-${{ matrix.rid }}
