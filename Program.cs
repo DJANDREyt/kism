@@ -51,6 +51,9 @@ public class Program {
         var cfgOutputDiretory = new Argument<string>
             (name: "output",
             description: "Path to CFG output directory");
+        var decompileOutputDiretory = new Argument<string>
+            (name: "output",
+            description: "Path to Decompile output directory");
         var jsonOutput = new Argument<string>
             (name: "output",
             description: "Path to JSON output");
@@ -89,6 +92,12 @@ public class Program {
 
         rootCommand.AddGlobalOption(ueVersion);
         rootCommand.AddGlobalOption(mappings);
+
+        var decompile = new Command("decompile", "Decompile classes to text");
+        decompile.Add(assetInput);
+        decompile.Add(decompileOutputDiretory);
+        decompile.SetHandler(Decompile, ueVersion, mappings, assetInput, decompileOutputDiretory);
+        rootCommand.AddCommand(decompile);
 
         var cfg = new Command("cfg", "Generate control flow graphs of single asset and open in a web browser");
         cfg.Add(assetInput);
@@ -247,6 +256,16 @@ Leading underscores can be used to work around special function names being ille
         using(StreamWriter writetext = new StreamWriter(outputPath)) {
             writetext.Write(html);
         }
+    }
+
+    static void Decompile(EngineVersion ueVersion, string? mappings, string assetPath, string outputDir)
+    {
+        UAsset asset = LoadAsset(ueVersion, mappings, assetPath);
+        var fileName = Path.GetFileName(assetPath);
+        var output = new StreamWriter(Path.Join(outputDir, Path.ChangeExtension(fileName, ".txt")));
+        var decompiler = new Decompiler(asset, output);
+        decompiler.Decompile();
+        output.Close();
     }
     static void Cfg(EngineVersion ueVersion, string? mappings, string assetPath, string? dotPath) {
         UAsset asset = LoadAsset(ueVersion, mappings, assetPath);
